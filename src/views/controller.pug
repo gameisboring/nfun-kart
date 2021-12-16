@@ -1,0 +1,38 @@
+extends layout.pug
+
+block contents 
+    div.h-full
+        if(!title)
+            h1.text-4xl.text-center 입력된 데이터 없음!
+        
+        div#monitor.mod-div-wrapper.mt-16.p-8.mx-auto.space-y-4.rounded-xl.shadow-lg.bg-gray-300.text-center
+            h1.text-4xl.font-extrabold.mb-6 현재 데이터
+            h2.text-xl.font-bold  라운드 제목 : #{title}
+            h2.text-xl.font-bold  A팀 이름 : #{name_a}
+            h2.text-xl.font-bold  B팀 이름 : #{name_b}
+            h2.text-xl.font-bold  A팀 점수 : #{score_a}
+            h2.text-xl.font-bold  B팀 점수 : #{score_b}
+        div.mod-div-wrapper.mt-8.p-8.mx-auto.rounded-xl.shadow-lg.bg-gray-300.text-center
+            h1.text-4xl.font-extrabold.mb-6 데이터 입력
+            div.flex.flex-col.space-y-2.mx-2.mb-4
+                h2.text-xl.font-bold 매치 타이틀
+                input#title.rounded.border.border-gray-200.p-2(name="title" type="text" placeholder="")
+            div.grid-cols-2.grid
+                div.flex.flex-col.space-y-2.mx-2
+                    h2.text-xl.font-bold A팀 이름
+                    input#aname.rounded.border.border-gray-200.p-2(name="aName" type="text" placeholder="")
+                div.flex.flex-col.space-y-2.mx-2
+                    h2.text-xl.font-bold B팀 이름
+                    input#bname.rounded.border.border-gray-200.p-2(name="bName" type="text" placeholder="")
+                div.flex.flex-col.space-y-2.mx-2.mt-4
+                    h2.text-xl.font-bold A팀 점수
+                    input#ascore.rounded.border.border-gray-200.p-2(name="aScore" type="number" placeholder="" )
+                div.flex.flex-col.space-y-2.mx-2.mt-4
+                    h2.text-xl.font-bold B팀 점수
+                    input#bscore.rounded.border.border-gray-200.p-2(name="bScore" type="number" placeholder="" )
+            button#submitBtn.primary-btn.blue-btn.font-bold.mt-6.w-full 수정
+            button#changeBtn.primary-btn.red-btn.font-bold.mt-6.w-full 팀 교대
+            button#clearBtn.primary-btn.red-btn.font-bold.mt-6.w-full 초기화
+block scripts
+                    
+    script(src="../public/controller.js") 
