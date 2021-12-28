@@ -28,11 +28,23 @@
 
 .red-btn {
   background-color: rgb(220, 38, 38);
+  border: rgb(220, 38, 38) solid 2px;
   color: white;
+  transition: 0.3s ease all;
+}
+.red-btn:hover {
+  background-color: white;
+  color: rgb(220, 38, 38);
 }
 .blue-btn {
   background-color: rgb(45, 79, 231);
+  border: rgb(45, 79, 231) solid 2px;
   color: white;
+  transition: 0.3s ease all;
+}
+.blue-btn:hover {
+  background-color: white;
+  color: rgb(45, 79, 231);
 }
 
 .text {
