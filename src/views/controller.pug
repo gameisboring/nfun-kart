@@ -44,15 +44,17 @@ block contents
                     input#ascore.rounded-xl.border.border-gray-200.p-3(name="aScore" type="number" placeholder="" value=`${score_a}`)
                 div.flex.flex-col.space-y-2.mx-2.mt-4
                     h2.text-xl.font-bold B팀 점수
-                    input#bscore.rounded-xl.border.border-gray-200.p-2(name="bScore" type="number" placeholder="" value=`${score_b}` )
-            button#submitBtn.primary-btn.blue-btn.font-bold.mt-6.w-full 수정
-            div.flex.justify-evenly.space-x-3
-                button#aWin.primary-btn.blue-btn.font-bold.mt-6.w-full A팀 승리
-                button#bWin.primary-btn.blue-btn.font-bold.mt-6.w-full B팀 승리
-                button#draw.primary-btn.blue-btn.font-bold.mt-6.w-full 무승부
+                    input#bscore.rounded-xl.border.border-gray-200.p-3(name="bScore" type="number" placeholder="" value=`${score_b}` )
+            button#submitBtn.primary-btn.blue-btn.font-bold.mt-6.w-full 수정하기
+            div.flex.justify-evenly.space-x-4
+                div.w-full
+                    button#aWinOn.primary-btn.blue-btn.font-bold.mt-6.w-full A팀 승리 ON
+                    button#aWinOff.primary-btn.blue-btn-checked.font-bold.mt-6.w-full A팀 승리 OFF
+                div.w-full
+                    button#bWinOn.primary-btn.blue-btn.font-bold.mt-6.w-full B팀 승리 ON
+                    button#bWinOff.primary-btn.blue-btn-checked.font-bold.mt-6.w-full B팀 승리 OFF
             div.flex.justify-evenly.space-x-3
                 button#changeBtn.primary-btn.red-btn.font-bold.mt-6.w-full 팀 교대
-                button#clearWin.primary-btn.red-btn.font-bold.mt-6.w-full 승패 초기화
                 button#clearBtn.primary-btn.red-btn.font-bold.mt-6.w-full 점수 초기화
 block scripts
                     

@@ -51,8 +51,6 @@ router.get('/controller', (req, res, next) => {
         WHICHTEAMWIN = 'A팀 승리'
       } else if (!ATEAMWIN && BTEAMWIN) {
         WHICHTEAMWIN = 'B팀 승리'
-      } else if (ATEAMWIN && BTEAMWIN) {
-        WHICHTEAMWIN = '무승부'
       } else {
         WHICHTEAMWIN = '데이터 없음'
       }
@@ -125,9 +123,7 @@ router.post('/controller', async (req, res, next) => {
 })
 
 router.get('/data', (req, res, next) => {
-  const selectKartQuery = `SELECT * FROM KART ;`
-
-  connection.query(selectKartQuery, function (err, results, fields) {
+  connection.query(`SELECT * FROM KART ;`, function (err, results, fields) {
     if (err) {
       console.log(err)
       res.status(500).send('데이터 조회에 실패했습니다')
@@ -270,16 +266,23 @@ router.post('/controller/clear', async (req, res, next) => {
     }
   )
 })
-
-router.post('/controller/aWin', async (req, res, next) => {
+router.post('/controller/data', async (req, res, next) => {
   connection.query(
-    'UPDATE KART SET ATEAMWIN = TRUE , BTEAMWIN = FALSE;',
+    'SELECT ATEAMWIN,BTEAMWIN FROM KART;',
+    function (err, result) {
+      res.json(result)
+    }
+  )
+})
+router.post('/controller/aWinOn', async (req, res, next) => {
+  connection.query(
+    'UPDATE KART SET ATEAMWIN = TRUE;',
     function (err, result, fields) {
       if (err) {
         console.log(err)
       } else {
         connection.query(
-          'SELECT ATEAMWIN, BTEAMWIN FROM KART',
+          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
           function (err, _selResults, fields) {
             _selResults[0].ok = true
             res.json(_selResults[0])
@@ -288,18 +291,17 @@ router.post('/controller/aWin', async (req, res, next) => {
       }
     }
   )
-  console.log('awin')
 })
 
-router.post('/controller/bWin', async (req, res, next) => {
+router.post('/controller/aWinOff', async (req, res, next) => {
   connection.query(
-    'UPDATE KART SET BTEAMWIN = TRUE , ATEAMWIN = FALSE;',
+    'UPDATE KART SET ATEAMWIN = FALSE;',
     function (err, result, fields) {
       if (err) {
         console.log(err)
       } else {
         connection.query(
-          'SELECT ATEAMWIN, BTEAMWIN FROM KART',
+          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
           function (err, _selResults, fields) {
             _selResults[0].ok = true
             res.json(_selResults[0])
@@ -308,18 +310,18 @@ router.post('/controller/bWin', async (req, res, next) => {
       }
     }
   )
-  console.log('bwin')
 })
 
-router.post('/controller/clearWin', async (req, res, next) => {
+router.post('/controller/bWinOn', async (req, res, next) => {
   connection.query(
-    'UPDATE KART SET BTEAMWIN = FALSE , ATEAMWIN = FALSE;',
+    'UPDATE KART SET BTEAMWIN = TRUE',
     function (err, result, fields) {
       if (err) {
         console.log(err)
       } else {
+        console.log('bwinOn')
         connection.query(
-          'SELECT ATEAMWIN, BTEAMWIN FROM KART',
+          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
           function (err, _selResults, fields) {
             _selResults[0].ok = true
             res.json(_selResults[0])
@@ -328,27 +330,95 @@ router.post('/controller/clearWin', async (req, res, next) => {
       }
     }
   )
-  console.log('데이터 없음')
+})
+router.post('/controller/bWinOff', async (req, res, next) => {
+  connection.query(
+    'UPDATE KART SET BTEAMWIN = FALSE',
+    function (err, result, fields) {
+      if (err) {
+        console.log(err)
+      } else {
+        connection.query(
+          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
+          function (err, _selResults, fields) {
+            _selResults[0].ok = true
+            res.json(_selResults[0])
+          }
+        )
+      }
+    }
+  )
 })
 
-router.post('/controller/draw', async (req, res, next) => {
-  connection.query(
-    'UPDATE KART SET BTEAMWIN = TRUE , ATEAMWIN = TRUE;',
-    function (err, result, fields) {
+router.get('/controller2', async (req, res, next) => {
+  res.render('controller2')
+})
+
+router.post('/controller2', async (req, res, next) => {
+  await connection.query(
+    'UPDATE KART_MATCH SET MAT_ATEAMNAME = ? , MAT_ASCORE = ?, MAT_BTEAMNAME = ?, MAT_BSCORE = ? WHERE MAT_TITLE = ?;',
+    [
+      req.body.MAT_ATEAMNAME,
+      req.body.MAT_ASCORE,
+      req.body.MAT_BTEAMNAME,
+      req.body.MAT_BSCORE,
+      req.body.MAT_TITLE,
+    ],
+    function (err, result) {
       if (err) {
         console.log(err)
       } else {
         connection.query(
-          'SELECT ATEAMWIN, BTEAMWIN FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
+          `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.body.MAT_TITLE}'`,
+          function (err, selResults, fields) {
+            if (err) {
+              console.log(err)
+              return
+            }
+            res.json(selResults)
           }
         )
       }
     }
   )
-  console.log('무승부')
+})
+router.post('/controller2/data', async (req, res, next) => {
+  if (req.body) {
+    await connection.query(
+      `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.body.MAT_TITLE}'`,
+      function (err, result, fields) {
+        if (err) {
+          console.log(err)
+          return
+        }
+        res.json(result)
+      }
+    )
+  }
+})
+
+router.get('/data2', async (req, res) => {
+  connection.query(
+    'SELECT * FROM KART_MATCH ORDER BY MAT_ID ASC',
+    (err, result) => {
+      let data = `<?xml version="1.0" encoding="UTF-8"?><matches>`
+      for (var i in result) {
+        console.log(result[i].MAT_TITLE)
+        data += `
+      <match>
+        <
+        >${result[i].MAT_TITLE}</>
+        <ateamname>${result[i].MAT_ATEAMNAME}</ateamname>
+        <ascore>${result[i].MAT_ASCORE}</ascore>
+        <bteamname>${result[i].MAT_BTEAMNAME}</bteamname>
+        <bscore>${result[i].MAT_BSCORE}</bscore>
+      </match>`
+      }
+      data += '</matches>'
+      res.header('Content-Type', 'application/xml')
+      res.status(200).send(data)
+    }
+  )
 })
 
 const PORT = 80
