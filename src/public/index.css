@@ -10,8 +10,7 @@
   font-family: 'Pretendard-Regular';
 }
 .primary-btn {
-  display: flex;
-  height: 56px;
+  padding: 12px;
   border-radius: 12px;
   cursor: pointer;
   justify-content: center;
@@ -42,7 +41,7 @@
   color: white;
   transition: 0.3s ease all;
 }
-.blue-btn:hover {
+.blue-btn-checked {
   background-color: white;
   color: rgb(45, 79, 231);
 }
