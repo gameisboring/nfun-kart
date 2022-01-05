@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
+var connection = require('../lib/db')
 
-router.get('/controller', (req, res, next) => {
+router.get('/', (req, res, next) => {
   connection.query('SELECT * FROM KART', function (err, selResults, fields) {
     if (selResults.length < 1) {
       res.render('controller')
@@ -37,10 +38,7 @@ router.get('/controller', (req, res, next) => {
   })
 })
 
-router.post('/controller', async (req, res, next) => {
-  console.log(
-    `aname : ${req.body.aName} / ascore : ${req.body.aScore} / bname : ${req.body.bName} / bscore : ${req.body.bScore}`
-  )
+router.post('/', async (req, res, next) => {
   if (!req.body) {
     return
   }
@@ -92,7 +90,7 @@ router.post('/controller', async (req, res, next) => {
   )
 })
 
-router.post('/controller/change', async (req, res, next) => {
+router.post('/change', async (req, res, next) => {
   const query = `update kart set ateamname = (@name_temp:=ateamname), ateamname = bteamname , bteamname = @name_temp, ascore = (@score_temp:=ascore), ascore = bscore, bscore = @score_temp;`
   await connection.query(query, (err, results, fields) => {
     if (err) {
@@ -109,7 +107,7 @@ router.post('/controller/change', async (req, res, next) => {
   })
 })
 
-router.post('/controller/clear', async (req, res, next) => {
+router.post('/clear', async (req, res, next) => {
   await connection.query(
     'UPDATE KART SET ASCORE = 0 , BSCORE = 0;',
     function (err, results, fields) {
@@ -127,7 +125,7 @@ router.post('/controller/clear', async (req, res, next) => {
     }
   )
 })
-router.post('/controller/data', async (req, res, next) => {
+router.post('/data', async (req, res, next) => {
   connection.query(
     'SELECT ATEAMWIN,BTEAMWIN FROM KART;',
     function (err, result) {
@@ -136,7 +134,7 @@ router.post('/controller/data', async (req, res, next) => {
   )
 })
 
-router.post('/controller/result/:method', async (req, res, next) => {
+router.post('/result/:method', async (req, res, next) => {
   const { method } = req.params
 
   console.log(method)

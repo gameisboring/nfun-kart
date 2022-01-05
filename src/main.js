@@ -2,7 +2,6 @@
 const express = require('express')
 const router = express.Router()
 const app = express()
-
 const controller = require('./router/controller')
 const controller2 = require('./router/controller2')
 

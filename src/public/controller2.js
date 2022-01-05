@@ -23,7 +23,6 @@ function dataRender(el) {
     dataType: 'Json',
     data: { MAT_TITLE: el[0].value },
     success: (res) => {
-      console.log(el[0].value)
       ;(el[0].value = res[0].MAT_TITLE),
         (el[1].value = res[0].MAT_ATEAMNAME),
         (el[2].value = res[0].MAT_ASCORE),
@@ -43,7 +42,7 @@ $('#submitBtn').click(function () {
   matchData(match_F_1)
 })
 
-function matchData(el) {
+function matchData(el, check) {
   let data = {
     MAT_TITLE: el[0].value,
     MAT_ATEAMNAME: el[1].value,
@@ -51,7 +50,6 @@ function matchData(el) {
     MAT_BTEAMNAME: el[3].value,
     MAT_BSCORE: el[4].value,
   }
-
   $.ajax({
     url: '/controller2',
     type: 'POST',
@@ -61,7 +59,7 @@ function matchData(el) {
       if (!res) {
         alert('데이터 수정 실패!')
       } else {
-        alert('데이터 수정 성공!')
+        return
       }
     },
     error: (req, stat, err) => {

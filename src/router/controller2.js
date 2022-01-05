@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
+var connection = require('../lib/db')
 
-router.get('/controller2', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   res.render('controller2')
 })
 
-router.post('/controller2', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   await connection.query(
     'UPDATE KART_MATCH SET MAT_ATEAMNAME = ? , MAT_ASCORE = ?, MAT_BTEAMNAME = ?, MAT_BSCORE = ? WHERE MAT_TITLE = ?;',
     [
@@ -33,7 +34,7 @@ router.post('/controller2', async (req, res, next) => {
     }
   )
 })
-router.get('/controller2/data', async (req, res, next) => {
+router.get('/data', async (req, res, next) => {
   if (req.body) {
     await connection.query(
       `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.query.MAT_TITLE}'`,
