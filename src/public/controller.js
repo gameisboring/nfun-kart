@@ -127,7 +127,7 @@ bWinOff.addEventListener('click', winBtnClickFunc)
 function winBtnClickFunc(event) {
   let team = event.target.id
   console.log(team)
-  fetch(`/controller/${team}`, {
+  fetch(`/controller/result/${team}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -137,15 +137,6 @@ function winBtnClickFunc(event) {
     .then((json) => {
       winBtnChange()
       if (json.ok) {
-        if (json.ATEAMWIN && !json.BTEAMWIN) {
-          document.querySelector('#_win').innerText = 'A팀 승리'
-        } else if (!json.ATEAMWIN && json.BTEAMWIN) {
-          document.querySelector('#_win').innerText = 'B팀 승리'
-        } else if (json.ATEAMWIN && json.BTEAMWIN) {
-          document.querySelector('#_win').innerText = '무승부'
-        } else {
-          document.querySelector('#_win').innerText = '데이터 없음'
-        }
       }
     })
 }

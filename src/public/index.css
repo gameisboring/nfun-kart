@@ -41,7 +41,12 @@
   color: white;
   transition: 0.3s ease all;
 }
+.blue-btn:hover {
+  background-color: white;
+  color: rgb(45, 79, 231);
+}
 .blue-btn-checked {
+  border: rgb(45, 79, 231) solid 2px;
   background-color: white;
   color: rgb(45, 79, 231);
 }

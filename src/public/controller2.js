@@ -19,10 +19,11 @@ $(document).ready(function () {
 function dataRender(el) {
   $.ajax({
     url: 'controller2/data',
-    type: 'POST',
+    type: 'GET',
     dataType: 'Json',
     data: { MAT_TITLE: el[0].value },
     success: (res) => {
+      console.log(el[0].value)
       ;(el[0].value = res[0].MAT_TITLE),
         (el[1].value = res[0].MAT_ATEAMNAME),
         (el[2].value = res[0].MAT_ASCORE),
@@ -60,7 +61,7 @@ function matchData(el) {
       if (!res) {
         alert('데이터 수정 실패!')
       } else {
-        console.log('데이터 수정 성공!')
+        alert('데이터 수정 성공!')
       }
     },
     error: (req, stat, err) => {

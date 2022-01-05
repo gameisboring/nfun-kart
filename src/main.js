@@ -3,123 +3,24 @@ const express = require('express')
 const router = express.Router()
 const app = express()
 
-const mysql = require('mysql')
+const controller = require('./router/controller')
+const controller2 = require('./router/controller2')
 
 const xml = require('xml')
 const bodyParser = require('body-parser')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/', router)
+app.use('/controller', controller)
+app.use('/controller2', controller2)
 app.use('/public', express.static(__dirname + '/public'))
 app.set('views', 'src/views')
 app.set('view engine', 'pug')
 
-var connection = mysql.createConnection({
-  // host 바꾸기
-  host: 'mysql',
-  port: 3306,
-  user: 'admin',
-  password: '153153',
-  database: 'nfun',
-})
-
-connection.connect(function (err) {
-  if (err) throw err
-  console.log('Connected!')
-})
+var connection = require('./lib/db')
 
 router.get('/', (req, res, next) => {
   res.render('empty')
-})
-router.get('/controller', (req, res, next) => {
-  connection.query('SELECT * FROM KART', function (err, selResults, fields) {
-    if (selResults.length < 1) {
-      res.render('controller')
-    } else {
-      const {
-        ATEAMNAME,
-        BTEAMNAME,
-        ASCORE,
-        BSCORE,
-        TITLE,
-        ATEAMWIN,
-        BTEAMWIN,
-      } = selResults[0]
-
-      let WHICHTEAMWIN = ''
-      if (ATEAMWIN && !BTEAMWIN) {
-        WHICHTEAMWIN = 'A팀 승리'
-      } else if (!ATEAMWIN && BTEAMWIN) {
-        WHICHTEAMWIN = 'B팀 승리'
-      } else {
-        WHICHTEAMWIN = '데이터 없음'
-      }
-
-      res.render('controller', {
-        title: TITLE,
-        score_a: ASCORE,
-        score_b: BSCORE,
-        name_a: ATEAMNAME,
-        name_b: BTEAMNAME,
-        win_check: WHICHTEAMWIN,
-      })
-    }
-  })
-})
-
-router.post('/controller', async (req, res, next) => {
-  console.log(
-    `aname : ${req.body.aName} / ascore : ${req.body.aScore} / bname : ${req.body.bName} / bscore : ${req.body.bScore}`
-  )
-  if (!req.body) {
-    return
-  }
-  await connection.query(
-    'SELECT * FROM KART',
-    function (err, selResults, fields) {
-      // 입력된 데이터 없으면
-      if (selResults.length < 1) {
-        console.log('New Insert')
-        // 데이터 삽입
-        connection.query(
-          `INSERT INTO KART(ATEAMNAME,BTEAMNAME,ASCORE,BSCORE,TITLE) VALUES('${req.body.aName}','${req.body.bName}',${req.body.aScore} ,${req.body.bScore} ,'${req.body.title}');`,
-          function (err, insertResults, fields) {
-            if (err) {
-              console.log(err)
-              return
-            } else {
-              connection.query(
-                'SELECT * FROM KART',
-                function (err, _selResults, fields) {
-                  res.status(200)
-                  _selResults[0].ok = true
-                  res.json(_selResults[0])
-                }
-              )
-            }
-          }
-        )
-      } else {
-        const updateKartQuery = `UPDATE KART SET ATEAMNAME = '${req.body.aName}' , BTEAMNAME = '${req.body.bName}' , ASCORE = '${req.body.aScore}' , BSCORE = '${req.body.bScore}' , TITLE = '${req.body.title}';`
-        connection.query(updateKartQuery, function (err, results, fields) {
-          if (err) {
-            res.status(500)
-            res.json({ ok: false })
-            return
-          } else {
-            connection.query(
-              'SELECT * FROM KART',
-              function (err, _selResults, fields) {
-                res.status(200)
-                _selResults[0].ok = true
-                res.json(_selResults[0])
-              }
-            )
-          }
-        })
-      }
-    }
-  )
 })
 
 router.get('/data', (req, res, next) => {
@@ -165,41 +66,6 @@ router.get('/data', (req, res, next) => {
   })
 })
 
-router.get('/players', (req, res, next) => {
-  const selectKartQuery = `SELECT PLAYER_NAME, PLAYER_PROFILE, TEAM_NAME, TEAM_LOGO FROM KART_TEAMS, KART_PLAYERS WHERE KART_TEAMS.TEAM_NAME = KART_PLAYERS.PLAYER_TEAM;`
-
-  connection.query(selectKartQuery, function (err, results, fields) {
-    if (err) {
-      console.log(err)
-      res.status(500).send('데이터 조회에 실패했습니다')
-      return
-    }
-
-    if (results.length < 1) {
-      res.header('Content-Type', 'application/xml')
-      res.status(200).send('입력된 데이터가 없습니다')
-      return
-    }
-
-    let data = '<?xml version="1.0" encoding="ASCII"?><root>'
-    for (i in results) {
-      data += `
-      <player>
-      <player_name>${results[i].PLAYER_NAME}</player_name>
-      <player_profile>${results[i].PLAYER_PROFILE}</player_profile>
-      <team_name>${results[i].TEAM_NAME}</team_name>
-      <team_logo>${results[i].TEAM_LOGO}</team_logo>
-      </player>`
-    }
-    data += `</root>`
-
-    console.log(data)
-
-    res.header('Content-Type', 'application/xml')
-    res.status(200).send(data)
-  })
-})
-
 router.get('/teams', (req, res, next) => {
   const selectKartQuery = `SELECT * FROM KART_TEAMS;`
 
@@ -231,172 +97,6 @@ router.get('/teams', (req, res, next) => {
   })
 })
 
-router.post('/controller/change', async (req, res, next) => {
-  const query = `update kart set ateamname = (@name_temp:=ateamname), ateamname = bteamname , bteamname = @name_temp, ascore = (@score_temp:=ascore), ascore = bscore, bscore = @score_temp;`
-  await connection.query(query, (err, results, fields) => {
-    if (err) {
-      console.log(err)
-    } else {
-      connection.query(
-        'SELECT * FROM KART',
-        function (err, _selResults, fields) {
-          _selResults[0].ok = true
-          res.json(_selResults[0])
-        }
-      )
-    }
-  })
-})
-
-router.post('/controller/clear', async (req, res, next) => {
-  await connection.query(
-    'UPDATE KART SET ASCORE = 0 , BSCORE = 0;',
-    function (err, results, fields) {
-      if (err) {
-        console.log(err)
-      } else {
-        connection.query(
-          'SELECT * FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
-      }
-    }
-  )
-})
-router.post('/controller/data', async (req, res, next) => {
-  connection.query(
-    'SELECT ATEAMWIN,BTEAMWIN FROM KART;',
-    function (err, result) {
-      res.json(result)
-    }
-  )
-})
-router.post('/controller/aWinOn', async (req, res, next) => {
-  connection.query(
-    'UPDATE KART SET ATEAMWIN = TRUE;',
-    function (err, result, fields) {
-      if (err) {
-        console.log(err)
-      } else {
-        connection.query(
-          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
-      }
-    }
-  )
-})
-
-router.post('/controller/aWinOff', async (req, res, next) => {
-  connection.query(
-    'UPDATE KART SET ATEAMWIN = FALSE;',
-    function (err, result, fields) {
-      if (err) {
-        console.log(err)
-      } else {
-        connection.query(
-          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
-      }
-    }
-  )
-})
-
-router.post('/controller/bWinOn', async (req, res, next) => {
-  connection.query(
-    'UPDATE KART SET BTEAMWIN = TRUE',
-    function (err, result, fields) {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log('bwinOn')
-        connection.query(
-          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
-      }
-    }
-  )
-})
-router.post('/controller/bWinOff', async (req, res, next) => {
-  connection.query(
-    'UPDATE KART SET BTEAMWIN = FALSE',
-    function (err, result, fields) {
-      if (err) {
-        console.log(err)
-      } else {
-        connection.query(
-          'SELECT ATEAMWIN,BTEAMWIN FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
-      }
-    }
-  )
-})
-
-router.get('/controller2', async (req, res, next) => {
-  res.render('controller2')
-})
-
-router.post('/controller2', async (req, res, next) => {
-  await connection.query(
-    'UPDATE KART_MATCH SET MAT_ATEAMNAME = ? , MAT_ASCORE = ?, MAT_BTEAMNAME = ?, MAT_BSCORE = ? WHERE MAT_TITLE = ?;',
-    [
-      req.body.MAT_ATEAMNAME,
-      req.body.MAT_ASCORE,
-      req.body.MAT_BTEAMNAME,
-      req.body.MAT_BSCORE,
-      req.body.MAT_TITLE,
-    ],
-    function (err, result) {
-      if (err) {
-        console.log(err)
-      } else {
-        connection.query(
-          `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.body.MAT_TITLE}'`,
-          function (err, selResults, fields) {
-            if (err) {
-              console.log(err)
-              return
-            }
-            res.json(selResults)
-          }
-        )
-      }
-    }
-  )
-})
-router.post('/controller2/data', async (req, res, next) => {
-  if (req.body) {
-    await connection.query(
-      `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.body.MAT_TITLE}'`,
-      function (err, result, fields) {
-        if (err) {
-          console.log(err)
-          return
-        }
-        res.json(result)
-      }
-    )
-  }
-})
-
 router.get('/data2', async (req, res) => {
   connection.query(
     'SELECT * FROM KART_MATCH ORDER BY MAT_ID ASC',
@@ -406,8 +106,7 @@ router.get('/data2', async (req, res) => {
         console.log(result[i].MAT_TITLE)
         data += `
       <match>
-        <
-        >${result[i].MAT_TITLE}</>
+        <title>${result[i].MAT_TITLE}</title>
         <ateamname>${result[i].MAT_ATEAMNAME}</ateamname>
         <ascore>${result[i].MAT_ASCORE}</ascore>
         <bteamname>${result[i].MAT_BTEAMNAME}</bteamname>
@@ -415,6 +114,26 @@ router.get('/data2', async (req, res) => {
       </match>`
       }
       data += '</matches>'
+      res.header('Content-Type', 'application/xml')
+      res.status(200).send(data)
+    }
+  )
+})
+
+router.get('/data/players', async (req, res) => {
+  connection.query(
+    'SELECT * FROM KART_PLAYERS ORDER BY PLAYER_TEAM ASC',
+    (err, result) => {
+      let data = `<?xml version="1.0" encoding="UTF-8"?><선수명단>`
+      for (var i in result) {
+        data += `
+      <선수>
+        <이름>${result[i].PLAYER_NAME}</이름>
+        <팀명>${result[i].PLAYER_TEAM}</팀명>
+        <닉네임>${result[i].PLAYER_NICKNAME}</닉네임>
+      </선수>`
+      }
+      data += '</선수명단>'
       res.header('Content-Type', 'application/xml')
       res.status(200).send(data)
     }
