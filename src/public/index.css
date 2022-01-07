@@ -87,6 +87,7 @@
 .mod-div-wrapper {
   width: 40rem;
   font-family: 'Pretendard-Regular';
+  white-space: pre-wrap;
 }
 
 @media (max-width: 768px) {
@@ -137,4 +138,28 @@
     font-size: 1.25rem;
     line-height: 2.25rem;
   }
+}
+
+.tabAnim {
+  z-index: -9;
+}
+
+#option0:checked ~ div {
+  --tw-translate-x: 0%;
+}
+
+#option1:checked ~ div {
+  --tw-translate-x: 100%;
+}
+
+#option2:checked ~ div {
+  --tw-translate-x: 200%;
+}
+
+#option3:checked ~ div {
+  --tw-translate-x: 300%;
+}
+
+#option4:checked ~ div {
+  --tw-translate-x: 400%;
 }

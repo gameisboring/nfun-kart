@@ -5,6 +5,7 @@ const bScoreInput = document.querySelector('#bscore')
 const titleInput = document.querySelector('#title')
 
 const submitBtn = document.querySelector('#submitBtn')
+const saveBtn = document.querySelector('#saveBtn')
 const changeBtn = document.querySelector('#changeBtn')
 const clearBtn = document.querySelector('#clearBtn')
 
@@ -24,6 +25,19 @@ function checkScreen() {
 
 document.addEventListener('resize', checkScreen())
 
+function findSelection(field) {
+  var test = 'document.theForm.' + field
+  var sizes = test
+
+  alert(sizes)
+  for (i = 0; i < sizes.length; i++) {
+    if (sizes[i].checked == true) {
+      alert(sizes[i].value + ' you got a value')
+      return sizes[i].value
+    }
+  }
+}
+
 // 수정하기 버튼 클릭 이벤트 발생
 submitBtn.addEventListener('click', function () {
   if (
@@ -40,7 +54,6 @@ submitBtn.addEventListener('click', function () {
       aScore: aScoreInput.value,
       bScore: bScoreInput.value,
     }
-
     fetch('/controller', {
       method: 'POST',
       headers: {
@@ -63,6 +76,54 @@ submitBtn.addEventListener('click', function () {
       })
   } else {
     alert('데이터를 전부 입력해주세요')
+  }
+})
+
+// 라운드 저장 버튼 클릭 이벤트 발생
+saveBtn.addEventListener('click', function () {
+  var matchTypeRadio = $("input[name='matchType']:checked").val()
+  console.log(matchTypeRadio)
+
+  if (matchTypeRadio === undefined) {
+    alert('경기 타입을 선택해주세요')
+  } else {
+    if (confirm('저장하시겠습니까?')) {
+      if (
+        aNameInput.value &&
+        bNameInput.value &&
+        aScoreInput.value &&
+        bScoreInput.value
+      ) {
+        const data = {
+          aName: aNameInput.value,
+          bName: bNameInput.value,
+          aScore: aScoreInput.value,
+          bScore: bScoreInput.value,
+          type: matchTypeRadio,
+        }
+
+        fetch('/controller/result', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json)
+            if (json.ok) {
+              getResult()
+            } else {
+              alert('수정 실패')
+            }
+          })
+      } else {
+        alert('데이터를 전부 입력해주세요')
+      }
+      aScoreInput.value = 0
+      bScoreInput.value = 0
+    }
   }
 })
 
@@ -113,6 +174,8 @@ clearBtn.addEventListener('click', function () {
         document.querySelector('#bscore').value = json.BSCORE
       }
     })
+
+  getResult()
 })
 
 // A팀 승리 ON 버튼 클릭 이벤트 발생
@@ -127,7 +190,7 @@ bWinOff.addEventListener('click', winBtnClickFunc)
 function winBtnClickFunc(event) {
   let team = event.target.id
   console.log(team)
-  fetch(`/controller/result/${team}`, {
+  fetch(`/controller/win/${team}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -173,6 +236,36 @@ function winBtnChange() {
   })
 }
 
+function getResult() {
+  $.ajax({
+    url: '/controller/result',
+    dataType: 'Json',
+    type: 'GET',
+    success: (res) => {
+      if (res.isEmpty) {
+        console.log('fail!')
+      }
+
+      for (var i in res) {
+        if (res[i].RES_TYPE === 'speed') {
+          document.querySelector('#speed_ascore').innerText = res[i].RES_ASCORE
+          document.querySelector('#speed_bscore').innerText = res[i].RES_BSCORE
+        } else if (res[i].RES_TYPE === 'item') {
+          document.querySelector('#item_ascore').innerText = res[i].RES_ASCORE
+          document.querySelector('#item_bscore').innerText = res[i].RES_BSCORE
+        } else if (res[i].RES_TYPE === 'ace') {
+          document.querySelector('#ace_ascore').innerText = res[i].RES_ASCORE
+          document.querySelector('#ace_bscore').innerText = res[i].RES_BSCORE
+        }
+      }
+    },
+    error: (res) => {
+      console.log('fail!')
+    },
+  })
+}
+
 $(document).ready(function () {
   winBtnChange()
+  getResult()
 })

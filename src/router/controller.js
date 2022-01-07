@@ -113,15 +113,23 @@ router.post('/clear', async (req, res, next) => {
     function (err, results, fields) {
       if (err) {
         console.log(err)
-      } else {
-        connection.query(
-          'SELECT * FROM KART',
-          function (err, _selResults, fields) {
-            _selResults[0].ok = true
-            res.json(_selResults[0])
-          }
-        )
       }
+    }
+  )
+  await connection.query(
+    'UPDATE KART_RESULT SET RES_ASCORE = 0 , RES_BSCORE = 0;',
+    function (err, results, fields) {
+      if (err) {
+        console.log(err)
+      }
+    }
+  )
+
+  await connection.query(
+    'SELECT * FROM KART',
+    function (err, _selResults, fields) {
+      _selResults[0].ok = true
+      res.json(_selResults[0])
     }
   )
 })
@@ -133,8 +141,49 @@ router.post('/data', async (req, res, next) => {
     }
   )
 })
+router.get('/result', async (req, res, next) => {
+  connection.query('SELECT * FROM KART_RESULT;', function (err, result) {
+    res.json(result)
+  })
+})
+router.post('/result', async (req, res, next) => {
+  connection.query(
+    'SELECT * FROM KART_RESULT WHERE RES_TYPE = ?;',
+    req.body.type,
+    function (err, selRes) {
+      console.log('selRes')
+      console.log(selRes)
 
-router.post('/result/:method', async (req, res, next) => {
+      if (selRes.length > 0) {
+        connection.query(
+          'UPDATE KART_RESULT SET RES_ASCORE = ? , RES_BSCORE = ? WHERE RES_TYPE = ?;',
+          [req.body.aScore, req.body.bScore, req.body.type],
+          function (err, upResult) {
+            if (err) {
+              console.log(err)
+              return
+            }
+            console.log(`update : ${upResult}`)
+            res.json({ ok: true })
+          }
+        )
+      } else {
+        connection.query(
+          'INSERT INTO KART_RESULT(RES_ASCORE,RES_BSCORE,RES_TYPE) values(?,?,?);',
+          [req.body.aScore, req.body.bScore, req.body.type],
+          function (err, inResult) {
+            if (err) {
+              console.log(err)
+              return
+            }
+            res.json({ ok: true })
+          }
+        )
+      }
+    }
+  )
+})
+router.post('/win/:method', async (req, res, next) => {
   const { method } = req.params
 
   console.log(method)

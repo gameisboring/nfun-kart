@@ -2,28 +2,56 @@ extends layout.pug
 
 block contents 
     div.h-full
-        if(!title)
-            h1.text-4xl.text-center.mt-6 입력된 데이터 없음!
-        div.mod-div-wrapper.mt-16.p-8.mx-auto.rounded-xl.shadow-lg.bg-gray-300.text-center
-            h1.text-4xl.font-extrabold.mb-6 현재 데이터
-            div.flex
-                span.text-xl.font-bold.p-3 라운드 타이틀 : 
-                span#_title.text-xl.font-bold.bg-white.rounded-lg.p-3.mb-4.flex-1 #{title}
-            div.flex.flex-col
-                div.flex.justify-evenly.mb-4.space-x-4
-                    div.flex.w-full
-                        span.text-xl.font-bold.p-3 A팀 이름 : 
-                        span#_aname.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{name_a}
-                    div.flex.w-full
-                        span.text-xl.font-bold.p-3 B팀 이름 : 
-                        span#_bname.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{name_b}
-                div.flex.justify-evenly.mb-4.space-x-4
-                    div.flex.w-full
-                        span.text-xl.font-bold.p-3 A팀 점수 : 
-                        span#_ascore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{score_a}
-                    div.flex.w-full
-                        span.text-xl.font-bold.p-3 B팀 점수 : 
-                        span#_bscore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{score_b}
+        div.flex.justify-center
+            if(!title)
+                h1.text-4xl.text-center.mt-6 입력된 데이터 없음!
+            div.mod-div-wrapper.mt-16.p-8.rounded-xl.shadow-lg.bg-gray-300.text-center
+                h1.text-4xl.font-extrabold.mb-6 현재 데이터
+                div.flex
+                    span.text-xl.font-bold.p-3 라운드 타이틀 : 
+                    span#_title.text-xl.font-bold.bg-white.rounded-lg.p-3.mb-4.flex-1 #{title}
+                div.flex.flex-col
+                    div.flex.justify-evenly.mb-4.space-x-4
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 A팀 이름 : 
+                            span#_aname.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{name_a}
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 B팀 이름 : 
+                            span#_bname.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{name_b}
+                    div.flex.justify-evenly.mb-4.space-x-4
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 A팀 점수 : 
+                            span#_ascore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{score_a}
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 B팀 점수 : 
+                            span#_bscore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 #{score_b}
+            div.mod-div-wrapper.mt-8.p-8.ml-16.rounded-xl.shadow-lg.bg-gray-300.text-center
+                h1.text-4xl.font-extrabold.mb-6 경기 결과 데이터
+                div.flex.flex-col
+                    h3.text-2xl.font-extrabold.mb-6.text-blue-800 스피드전
+                    div.flex.justify-evenly.mb-4.space-x-4
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 A팀
+                            span#speed_ascore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 
+                        div.flex.w-full
+                            span#speed_bscore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 
+                            span.text-xl.font-bold.p-3 B팀
+                    h3.text-2xl.font-extrabold.mb-6.text-red-800 아이템전
+                    div.flex.justify-evenly.mb-4.space-x-4
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 A팀
+                            span#item_ascore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 
+                        div.flex.w-full
+                            span#item_bscore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1
+                            span.text-xl.font-bold.p-3 B팀
+                    h3.text-2xl.font-extrabold.mb-6.text-green-800 에이스 결정전
+                    div.flex.justify-evenly.mb-4.space-x-4
+                        div.flex.w-full
+                            span.text-xl.font-bold.p-3 A팀
+                            span#ace_ascore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1 
+                        div.flex.w-full
+                            span#ace_bscore.text-xl.font-bold.bg-white.rounded-lg.p-3.flex-1
+                            span.text-xl.font-bold.p-3 B팀
         div.mod-div-wrapper.mt-8.p-8.mx-auto.rounded-xl.shadow-lg.bg-gray-300.text-center
             h1.text-4xl.font-extrabold.mb-6 데이터 입력
             div.flex.flex-col.space-y-2.mx-2.mb-4
@@ -42,7 +70,20 @@ block contents
                 div.flex.flex-col.space-y-2.mx-2.mt-4
                     h2.text-xl.font-bold B팀 점수
                     input#bscore.rounded-xl.border.border-gray-200.p-3(name="bScore" type="number" placeholder="" value=`${score_b}` )
-            button#submitBtn.primary-btn.blue-btn.font-bold.mt-6.w-full 수정하기
+            h2.text-xl.font-bold.mt-4 경기 타입
+            div#matchTypeDiv.flex.justify-center.space-x-4.text-xl
+                .form-check.form-check-inline
+                    input#inlineRadio1.form-check-input.form-check-input.rounded-full.h-4.w-4.border.border-gray-300.bg-white.transition.duration-200.mt-1.align-top.bg-no-repeat.bg-center.bg-contain.float-left.mr-2.cursor-pointer(class='checked:bg-blue-600 checked:border-blue-600 focus:outline-none' type='radio' name='matchType' value='speed')
+                    label.form-check-label.inline-block.text-gray-800(for='inlineRadio1') 스피드전
+                .form-check.form-check-inline
+                    input#inlineRadio2.form-check-input.form-check-input.rounded-full.h-4.w-4.border.border-gray-300.bg-white.transition.duration-200.mt-1.align-top.bg-no-repeat.bg-center.bg-contain.float-left.mr-2.cursor-pointer(class='checked:bg-blue-600 checked:border-blue-600 focus:outline-none' type='radio' name='matchType' value='item')
+                    label.form-check-label.inline-block.text-gray-800(for='inlineRadio2') 아이템전
+                .form-check.form-check-inline
+                    input#inlineRadio3.form-check-input.form-check-input.rounded-full.h-4.w-4.border.border-gray-300.bg-white.transition.duration-200.mt-1.align-top.bg-no-repeat.bg-center.bg-contain.float-left.mr-2.cursor-pointer(class='checked:bg-blue-600 checked:border-blue-600 focus:outline-none' type='radio' name='matchType' value='ace')
+                    label.form-check-label.inline-block.text-gray-800(for='inlineRadio3') 에이스 결정전
+            div.flex.justify-evenly.space-x-4
+                button#submitBtn.primary-btn.blue-btn.font-bold.mt-6.w-full 수정하기
+                button#saveBtn.primary-btn.red-btn.font-bold.mt-6.w-full 라운드 저장
             div.flex.justify-evenly.space-x-4
                 div.w-full
                     button#aWinOn.primary-btn.blue-btn.font-bold.mt-6.w-full A팀 승리 ON

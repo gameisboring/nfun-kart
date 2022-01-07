@@ -119,6 +119,23 @@ router.get('/data2', async (req, res) => {
   )
 })
 
+router.get('/data/result', async (req, res) => {
+  connection.query('SELECT * FROM KART_RESULT', (err, result) => {
+    let data = `<?xml version="1.0" encoding="UTF-8"?><RESULT>`
+    for (var i in result) {
+      data += `
+      <ROUND>
+        <ASCORE>${result[i].RES_ASCORE}</ASCORE>
+        <BSCORE>${result[i].RES_BSCORE}</BSCORE>
+        <TYPE>${result[i].RES_TYPE}</TYPE>
+      </ROUND>`
+    }
+    data += '</RESULT>'
+    res.header('Content-Type', 'application/xml')
+    res.status(200).send(data)
+  })
+})
+
 router.get('/data/players', async (req, res) => {
   connection.query(
     'SELECT * FROM KART_PLAYERS ORDER BY PLAYER_TEAM ASC',
@@ -139,6 +156,23 @@ router.get('/data/players', async (req, res) => {
   )
 })
 
+function getTime() {
+  let today = new Date()
+  let month = today.getMonth() + 1 // 월
+  if (month / 10 < 1) {
+    month = '0' + month
+  }
+  let date = today.getDate() // 날짜
+  if (date / 10 < 1) {
+    date = '0' + date
+  }
+  let hours = today.getHours() // 시
+  let minutes = today.getMinutes() // 분
+  let seconds = today.getSeconds() // 초
+  let milliseconds = today.getMilliseconds() // 밀리초
+
+  return `${month}-${date} ${hours}:${minutes}:${seconds}(${milliseconds})`
+}
 const PORT = 80
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT} port`)
