@@ -163,7 +163,6 @@ bWinOff.addEventListener('click', winBtnClickFunc)
 
 function winBtnClickFunc(event) {
   let team = event.target.id
-  console.log(team)
   fetch(`/controller/win/${team}`, {
     method: 'POST',
     headers: {

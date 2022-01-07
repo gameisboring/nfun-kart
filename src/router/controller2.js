@@ -20,7 +20,11 @@ router.post('/', async (req, res, next) => {
       req.body.MAT_TITLE,
     ],
     function (err, result) {
-      console.log(`${getTime()} | /controller2 POST | KART_MATCH 데이터 수정`)
+      console.log(
+        `${getTime()} | /controller2 POST | KART_MATCH ${
+          req.body.MAT_TITLE
+        } 데이터 수정`
+      )
       if (err) {
         console.log(err)
       } else {
@@ -28,7 +32,9 @@ router.post('/', async (req, res, next) => {
           `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.body.MAT_TITLE}'`,
           function (err, selResults, fields) {
             console.log(
-              `${getTime()} | /controller2 POST | KART_MATCH 경기별 데이터 조회`
+              `${getTime()} | /controller2 POST | KART_MATCH ${
+                req.body.MAT_TITLE
+              } 데이터 조회`
             )
             if (err) {
               console.log(err)
@@ -49,7 +55,9 @@ router.get('/data', async (req, res, next) => {
       `SELECT * FROM KART_MATCH WHERE MAT_TITLE = '${req.query.MAT_TITLE}'`,
       function (err, result, fields) {
         console.log(
-          `${getTime()} | /controller2/data GET | KART_MATCH 경기별 데이터 조회`
+          `${getTime()} | /controller2/data GET | KART_MATCH ${
+            req.query.MAT_TITLE
+          } 데이터 조회`
         )
         if (err) {
           console.log(err)
