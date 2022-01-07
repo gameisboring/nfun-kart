@@ -30,27 +30,6 @@ function dataRender(el) {
         (el[4].value = res[0].MAT_BSCORE)
     },
   })
-
-  $.ajax({
-    url: '/register',
-    type: 'POST',
-    dataType: 'Json',
-    data: { data: 'data' },
-    success: (res) => {
-      console.log(res)
-      Swal.fire({
-        icon: 'success',
-        text: '사전등록에 성공했습니다',
-      })
-    },
-    error: (err) => {
-      console.log(err)
-      Swal.fire({
-        icon: 'error',
-        text: '사전등록에 실패했습니다',
-      })
-    },
-  })
 }
 
 $('#submitBtn').click(function () {

@@ -14,30 +14,6 @@ const bWinOff = document.querySelector('#bWinOff')
 const aWinOn = document.querySelector('#aWinOn')
 const bWinOn = document.querySelector('#bWinOn')
 
-function checkScreen() {
-  const windowWidth = window.innerWidth
-  if (windowWidth <= 768) {
-    return
-  } else {
-    return
-  }
-}
-
-document.addEventListener('resize', checkScreen())
-
-function findSelection(field) {
-  var test = 'document.theForm.' + field
-  var sizes = test
-
-  alert(sizes)
-  for (i = 0; i < sizes.length; i++) {
-    if (sizes[i].checked == true) {
-      alert(sizes[i].value + ' you got a value')
-      return sizes[i].value
-    }
-  }
-}
-
 // 수정하기 버튼 클릭 이벤트 발생
 submitBtn.addEventListener('click', function () {
   if (
@@ -82,7 +58,6 @@ submitBtn.addEventListener('click', function () {
 // 라운드 저장 버튼 클릭 이벤트 발생
 saveBtn.addEventListener('click', function () {
   var matchTypeRadio = $("input[name='matchType']:checked").val()
-  console.log(matchTypeRadio)
 
   if (matchTypeRadio === undefined) {
     alert('경기 타입을 선택해주세요')
@@ -111,7 +86,6 @@ saveBtn.addEventListener('click', function () {
         })
           .then((response) => response.json())
           .then((json) => {
-            console.log(json)
             if (json.ok) {
               getResult()
             } else {
@@ -172,10 +146,10 @@ clearBtn.addEventListener('click', function () {
 
         document.querySelector('#ascore').value = json.ASCORE
         document.querySelector('#bscore').value = json.BSCORE
+
+        getResult()
       }
     })
-
-  getResult()
 })
 
 // A팀 승리 ON 버튼 클릭 이벤트 발생
