@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
 })
 
 router.get('/data', (req, res, next) => {
-  console.log(`${getTime()}  | /data GET | 경기정보 XML 데이터 요청`)
+  // console.log(`${getTime()} | /data GET | 경기정보 XML 데이터 요청`)
   connection.query(`SELECT * FROM KART ;`, function (err, results, fields) {
     if (err) {
       console.log(err)
@@ -63,7 +63,7 @@ router.get('/data', (req, res, next) => {
 
     res.header('Content-Type', 'application/xml')
     res.status(200).send(data)
-    console.log(`${getTime()}  | /data GET | 경기정보 XML 데이터 응답`)
+    console.log(`${getTime()} | /data GET | 경기정보 XML 데이터 응답`)
   })
 })
 
@@ -98,7 +98,7 @@ router.get('/teams', (req, res, next) => {
 })
 
 router.get('/data2', async (req, res) => {
-  console.log(`${getTime()}  | /data2 GET | 대진표 XML 데이터 요청`)
+  console.log(`${getTime()} | /data2 GET | 대진표 XML 데이터 요청`)
   connection.query(
     'SELECT * FROM KART_MATCH ORDER BY MAT_ID ASC',
     (err, result) => {
@@ -116,13 +116,13 @@ router.get('/data2', async (req, res) => {
       data += '</matches>'
       res.header('Content-Type', 'application/xml')
       res.status(200).send(data)
-      console.log(`${getTime()}  | /data2 GET | 대진표 XML 데이터 응답`)
+      console.log(`${getTime()} | /data2 GET | 대진표 XML 데이터 응답`)
     }
   )
 })
 
 router.get('/data/result', async (req, res) => {
-  console.log(`${getTime()}  | /data/result GET | 경기결과 XML 데이터 요청`)
+  // console.log(`${getTime()} | /data/result GET | 경기결과 XML 데이터 요청`)
   connection.query('SELECT * FROM KART_RESULT', (err, result) => {
     let data = `<?xml version="1.0" encoding="UTF-8"?><RESULT>`
     for (var i in result) {
@@ -136,12 +136,12 @@ router.get('/data/result', async (req, res) => {
     data += '</RESULT>'
     res.header('Content-Type', 'application/xml')
     res.status(200).send(data)
-    console.log(`${getTime()}  | /data/result GET | 경기결과 XML 데이터 응답`)
+    console.log(`${getTime()} | /data/result GET | 경기결과 XML 데이터 응답`)
   })
 })
 
 router.get('/data/players', async (req, res) => {
-  console.log(`${getTime()}  | /data/players GET | 선수명단 XML 데이터 요청`)
+  // console.log(`${getTime()} | /data/players GET | 선수명단 XML 데이터 요청`)
   connection.query(
     'SELECT * FROM KART_PLAYERS ORDER BY PLAYER_TEAM ASC',
     (err, result) => {
@@ -155,9 +155,7 @@ router.get('/data/players', async (req, res) => {
       </선수>`
       }
       data += '</선수명단>'
-      console.log(
-        `${getTime()}  | /data/players GET | 선수명단 XML 데이터 응답`
-      )
+      console.log(`${getTime()} | /data/players GET | 선수명단 XML 데이터 응답`)
       res.header('Content-Type', 'application/xml')
       res.status(200).send(data)
     }
@@ -175,9 +173,23 @@ function getTime() {
     date = '0' + date
   }
   let hours = today.getHours() // 시
+  if (hours / 10 < 1) {
+    hours = '0' + hours
+  }
   let minutes = today.getMinutes() // 분
+  if (minutes / 10 < 1) {
+    minutes = '0' + minutes
+  }
   let seconds = today.getSeconds() // 초
+  if (seconds / 10 < 1) {
+    seconds = '0' + seconds
+  }
   let milliseconds = today.getMilliseconds() // 밀리초
+  if (milliseconds / 10 < 1) {
+    milliseconds = '00' + milliseconds
+  } else if (milliseconds / 100 < 1) {
+    milliseconds = '0' + milliseconds
+  }
 
   return `${month}-${date} ${hours}:${minutes}:${seconds}(${milliseconds})`
 }

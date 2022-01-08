@@ -3,7 +3,7 @@ const router = express.Router()
 var connection = require('../lib/db')
 
 router.get('/', (req, res, next) => {
-  console.log(`${getTime()} '/controller GET' 컨트롤러 페이지 요청`)
+  console.log(`${getTime()} | /controller GET | 컨트롤러 페이지 요청`)
   connection.query('SELECT * FROM KART', function (err, selResults, fields) {
     if (selResults.length < 1) {
       res.render('controller')
@@ -27,7 +27,7 @@ router.get('/', (req, res, next) => {
         WHICHTEAMWIN = '데이터 없음'
       }
 
-      console.log(`${getTime()} '/controller GET' 컨트롤러 페이지 응답`)
+      console.log(`${getTime()} | /controller GET | 컨트롤러 페이지 응답`)
       res.render('controller', {
         title: TITLE,
         score_a: ASCORE,
@@ -48,7 +48,7 @@ router.post('/', async (req, res, next) => {
   await connection.query(
     'SELECT * FROM KART',
     function (err, selResults, fields) {
-      console.log(`${getTime()} '/controller POST' KART 데이터 조회`)
+      console.log(`${getTime()} | /controller POST | KART 데이터 조회`)
       // 입력된 데이터 없으면
       if (selResults.length < 1) {
         console.log('New Insert')
@@ -60,14 +60,16 @@ router.post('/', async (req, res, next) => {
               console.log(err)
               return
             } else {
-              console.log(`${getTime()} '/controller POST' KART 데이터 삽입`)
+              console.log(`${getTime()} | /controller POST | KART 데이터 삽입`)
               connection.query(
                 'SELECT * FROM KART',
                 function (err, _selResults, fields) {
                   res.status(200)
                   _selResults[0].ok = true
                   res.json(_selResults[0])
-                  console.log(`${getTime()} '/controller POST' 수정(삽입) 응답`)
+                  console.log(
+                    `${getTime()} | /controller POST | 수정(삽입) 응답`
+                  )
                 }
               )
             }
@@ -81,15 +83,17 @@ router.post('/', async (req, res, next) => {
             res.json({ ok: false })
             return
           } else {
-            console.log(`${getTime()} '/controller POST' KART 데이터 수정`)
+            console.log(`${getTime()} | /controller POST | KART 데이터 수정`)
             connection.query(
               'SELECT * FROM KART',
               function (err, _selResults, fields) {
-                console.log(`${getTime()} '/controller POST' KART 데이터 조회`)
+                console.log(
+                  `${getTime()} | /controller POST | KART 데이터 조회`
+                )
                 res.status(200)
                 _selResults[0].ok = true
                 res.json(_selResults[0])
-                console.log(`${getTime()} '/controller POST' 수정(수정) 응답`)
+                console.log(`${getTime()} | /controller POST | 수정(수정) 응답`)
               }
             )
           }
@@ -100,7 +104,7 @@ router.post('/', async (req, res, next) => {
 })
 
 router.post('/change', async (req, res, next) => {
-  console.log(`${getTime()} '/controller/change POST' 팀 교대 요청`)
+  console.log(`${getTime()} | /controller/change POST | 팀 교대 요청`)
   const query = `update kart set ateamname = (@name_temp:=ateamname), ateamname = bteamname , bteamname = @name_temp, ascore = (@score_temp:=ascore), ascore = bscore, bscore = @score_temp;`
   await connection.query(query, (err, results, fields) => {
     if (err) {
@@ -109,10 +113,12 @@ router.post('/change', async (req, res, next) => {
       connection.query(
         'SELECT * FROM KART',
         function (err, _selResults, fields) {
-          console.log(`${getTime()} '/controller/change POST' KART 데이터 조회`)
+          console.log(
+            `${getTime()} | /controller/change POST | KART 데이터 조회`
+          )
           _selResults[0].ok = true
           res.json(_selResults[0])
-          console.log(`${getTime()} '/controller/change POST' 팀 교대 응답`)
+          console.log(`${getTime()} | /controller/change POST | 팀 교대 응답`)
         }
       )
     }
@@ -120,7 +126,7 @@ router.post('/change', async (req, res, next) => {
 })
 
 router.post('/clear', (req, res, next) => {
-  console.log(`${getTime()} '/controller/clear' 점수초기화 요청`)
+  console.log(`${getTime()} | /controller/clear | 점수초기화 요청`)
   connection.query(
     'UPDATE KART SET ASCORE = 0 , BSCORE = 0;',
     function (err, results, fields) {
@@ -128,7 +134,7 @@ router.post('/clear', (req, res, next) => {
         console.log(err)
         return
       }
-      console.log(`${getTime()} '/controller/change' KART 점수 초기화`)
+      console.log(`${getTime()} | /controller/change | KART 점수 초기화`)
     }
   )
   connection.query(
@@ -138,23 +144,23 @@ router.post('/clear', (req, res, next) => {
         console.log(err)
         return
       }
-      console.log(`${getTime()} '/controller/change' KART_RESULT 점수 초기화`)
+      console.log(`${getTime()} | /controller/change | KART_RESULT 점수 초기화`)
     }
   )
 
   connection.query('SELECT * FROM KART', function (err, _selResults, fields) {
     _selResults[0].ok = true
     res.json(_selResults[0])
-    console.log(`${getTime()} '/controller/change' 점수초기화 결과 응답`)
+    console.log(`${getTime()} | /controller/change | 점수초기화 결과 응답`)
   })
 })
 router.post('/data', async (req, res, next) => {
-  console.log(`${getTime()}  | /controller/data |  데이터 요청`)
+  console.log(`${getTime()} | /controller/data |  데이터 요청`)
   connection.query(
     'SELECT ATEAMWIN,BTEAMWIN FROM KART;',
     function (err, result) {
       res.json(result)
-      console.log(`${getTime()}  | /controller/data |  데이터 응답`)
+      console.log(`${getTime()} | /controller/data |  데이터 응답`)
     }
   )
 })
@@ -260,9 +266,23 @@ function getTime() {
     date = '0' + date
   }
   let hours = today.getHours() // 시
+  if (hours / 10 < 1) {
+    hours = '0' + hours
+  }
   let minutes = today.getMinutes() // 분
+  if (minutes / 10 < 1) {
+    minutes = '0' + minutes
+  }
   let seconds = today.getSeconds() // 초
+  if (seconds / 10 < 1) {
+    seconds = '0' + seconds
+  }
   let milliseconds = today.getMilliseconds() // 밀리초
+  if (milliseconds / 10 < 1) {
+    milliseconds = '00' + milliseconds
+  } else if (milliseconds / 100 < 1) {
+    milliseconds = '0' + milliseconds
+  }
 
   return `${month}-${date} ${hours}:${minutes}:${seconds}(${milliseconds})`
 }

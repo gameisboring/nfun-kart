@@ -81,9 +81,23 @@ function getTime() {
     date = '0' + date
   }
   let hours = today.getHours() // 시
+  if (hours / 10 < 1) {
+    hours = '0' + hours
+  }
   let minutes = today.getMinutes() // 분
+  if (minutes / 10 < 1) {
+    minutes = '0' + minutes
+  }
   let seconds = today.getSeconds() // 초
+  if (seconds / 10 < 1) {
+    seconds = '0' + seconds
+  }
   let milliseconds = today.getMilliseconds() // 밀리초
+  if (milliseconds / 10 < 1) {
+    milliseconds = '00' + milliseconds
+  } else if (milliseconds / 100 < 1) {
+    milliseconds = '0' + milliseconds
+  }
 
   return `${month}-${date} ${hours}:${minutes}:${seconds}(${milliseconds})`
 }
